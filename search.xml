@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>生成模型相关之VAE</title>
+    <url>/2023/06/20/deeplearning/vae/</url>
+    <content><![CDATA[]]></content>
+      <tags>
+        <tag>生成模型</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>HelloWorld</title>
     <url>/2023/06/20/HelloWorld/</url>
-    <content><![CDATA[<h1 id="HelloWorld-努力分享一些学习心得！"><a href="#HelloWorld-努力分享一些学习心得！" class="headerlink" title="HelloWorld,努力分享一些学习心得！"></a>HelloWorld,努力分享一些学习心得！</h1><p><img src="/22cae29f8b6f4f9396dfc4638bc41d41.jpeg" alt="22cae29f8b6f4f9396dfc4638bc41d41"></p>
+    <content><![CDATA[<h1 id="HelloWorld-努力分享一些学习心得！"><a href="#HelloWorld-努力分享一些学习心得！" class="headerlink" title="HelloWorld,努力分享一些学习心得！"></a>HelloWorld,努力分享一些学习心得！</h1><p><img src="/2023/06/20/HelloWorld/22cae29f8b6f4f9396dfc4638bc41d41.jpeg"></p>
 ]]></content>
       <tags>
         <tag>hello</tag>

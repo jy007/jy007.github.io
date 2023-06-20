@@ -6,7 +6,7 @@
   <link href="http://jydeeplearning.cn/atom.xml" rel="self"/>
   
   <link href="http://jydeeplearning.cn/"/>
-  <updated>2023-06-20T08:40:29.291Z</updated>
+  <updated>2023-06-20T10:41:59.743Z</updated>
   <id>http://jydeeplearning.cn/</id>
   
   <author>
@@ -17,11 +17,26 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>生成模型相关之VAE</title>
+    <link href="http://jydeeplearning.cn/2023/06/20/deeplearning/vae/"/>
+    <id>http://jydeeplearning.cn/2023/06/20/deeplearning/vae/</id>
+    <published>2023-06-20T10:41:22.000Z</published>
+    <updated>2023-06-20T10:41:59.743Z</updated>
+    
+    
+    
+    
+    
+    <category term="生成模型" scheme="http://jydeeplearning.cn/tags/%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B/"/>
+    
+  </entry>
+  
+  <entry>
     <title>HelloWorld</title>
     <link href="http://jydeeplearning.cn/2023/06/20/HelloWorld/"/>
     <id>http://jydeeplearning.cn/2023/06/20/HelloWorld/</id>
     <published>2023-06-20T08:08:12.000Z</published>
-    <updated>2023-06-20T08:40:29.291Z</updated>
+    <updated>2023-06-20T10:30:51.404Z</updated>
     
     
       
