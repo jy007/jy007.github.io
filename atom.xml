@@ -6,7 +6,7 @@
   <link href="http://jydeeplearning.cn/atom.xml" rel="self"/>
   
   <link href="http://jydeeplearning.cn/"/>
-  <updated>2023-06-20T10:41:59.743Z</updated>
+  <updated>2023-07-04T09:15:37.738Z</updated>
   <id>http://jydeeplearning.cn/</id>
   
   <author>
@@ -17,12 +17,20 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>生成模型相关之VAE</title>
-    <link href="http://jydeeplearning.cn/2023/06/20/deeplearning/vae/"/>
-    <id>http://jydeeplearning.cn/2023/06/20/deeplearning/vae/</id>
-    <published>2023-06-20T10:41:22.000Z</published>
-    <updated>2023-06-20T10:41:59.743Z</updated>
+    <title>CS236  生成模型学习(一) 自回归模型</title>
+    <link href="http://jydeeplearning.cn/2023/07/03/deeplearning/cs236_model/"/>
+    <id>http://jydeeplearning.cn/2023/07/03/deeplearning/cs236_model/</id>
+    <published>2023-07-03T07:30:37.000Z</published>
+    <updated>2023-07-04T09:15:37.738Z</updated>
     
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;导论&quot;&gt;1</summary>
+        
+      
     
     
     
@@ -32,18 +40,74 @@
   </entry>
   
   <entry>
+    <title>post</title>
+    <link href="http://jydeeplearning.cn/2023/06/26/deeplearning/generative_model/"/>
+    <id>http://jydeeplearning.cn/2023/06/26/deeplearning/generative_model/</id>
+    <published>2023-06-26T06:53:15.000Z</published>
+    <updated>2023-07-04T09:08:58.938Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">#
+&lt;center&gt;
+生成模型
+&lt;/center&gt;
+&lt;ul&gt;
+&lt;li&gt;什么是生成模型&lt;/li&gt;
+&lt;li&gt;目前主要的生成模型: AR,GAN,VAE,CVAE,Norm Flow,Diffusion&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;生成模型的定义&quot;&gt;1.</summary>
+        
+      
+    
+    
+    
+    
+    <category term="generative model;vae;diffusion" scheme="http://jydeeplearning.cn/tags/generative-model-vae-diffusion/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MoleculeNet</title>
+    <link href="http://jydeeplearning.cn/2023/06/26/chemical/MoleculeNet/"/>
+    <id>http://jydeeplearning.cn/2023/06/26/chemical/MoleculeNet/</id>
+    <published>2023-06-26T04:03:20.000Z</published>
+    <updated>2023-06-26T04:03:41.429Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">
+</summary>
+        
+      
+    
+    
+    
+    
+    <category term="mol chem" scheme="http://jydeeplearning.cn/tags/mol-chem/"/>
+    
+  </entry>
+  
+  <entry>
     <title>HelloWorld</title>
     <link href="http://jydeeplearning.cn/2023/06/20/HelloWorld/"/>
     <id>http://jydeeplearning.cn/2023/06/20/HelloWorld/</id>
     <published>2023-06-20T08:08:12.000Z</published>
-    <updated>2023-06-20T10:30:51.404Z</updated>
+    <updated>2023-07-04T09:13:02.084Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h1 id=&quot;HelloWorld-努力分享一些学习心得！&quot;&gt;&lt;a href=&quot;#HelloWorld-努力分享一些学习心得！&quot; class=&quot;headerlink&quot;</summary>
+    <summary type="html">&lt;h1 id=&quot;helloworld努力分享一些学习心得&quot;&gt;HelloWorld,努力分享一些学习心得！&lt;/h1&gt;
+&lt;p&gt;&lt;img</summary>
         
       
     
