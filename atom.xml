@@ -6,7 +6,7 @@
   <link href="http://jydeeplearning.cn/atom.xml" rel="self"/>
   
   <link href="http://jydeeplearning.cn/"/>
-  <updated>2023-07-04T09:15:37.738Z</updated>
+  <updated>2023-07-06T03:48:08.259Z</updated>
   <id>http://jydeeplearning.cn/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CS236 生成模型学习（二） VAE(变分自编码器)</title>
+    <link href="http://jydeeplearning.cn/2023/07/04/deeplearning/cs236_model_2/"/>
+    <id>http://jydeeplearning.cn/2023/07/04/deeplearning/cs236_model_2/</id>
+    <published>2023-07-04T09:19:56.000Z</published>
+    <updated>2023-07-06T03:48:08.259Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">#
+&lt;center&gt;
+Variational atuoencoders
+&lt;/center&gt;
+&lt;p&gt;​
+隐变量模型形成了一类丰富的概率模型，可以推断底层数据中的隐藏结构。在这篇文章中，我们将研究变分自编码器，它是一类强大的具有潜在变量的深度生成模型。&lt;/p&gt;
+&lt;h3</summary>
+        
+      
+    
+    
+    
+    
+    <category term="VAE,生成模型，深度学习" scheme="http://jydeeplearning.cn/tags/VAE-%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B%EF%BC%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
   
   <entry>
     <title>CS236  生成模型学习(一) 自回归模型</title>
