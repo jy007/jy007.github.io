@@ -1,0 +1,60 @@
+---
+import { site } from "../data/site";
+import ThemeToggle from "./ThemeToggle.astro";
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="nav">
+  <div class="wrapper-wide nav-inner">
+    <a class="brand" href="/">{site.title}</a>
+    <nav class="links" aria-label="主导航">
+      {site.nav.map((item) => (
+        <a
+          href={item.href}
+          aria-current={currentPath === item.href ? "page" : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+    <ThemeToggle />
+  </div>
+</header>
+
+<style>
+  .nav {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding-block: var(--space-4);
+  }
+
+  .brand {
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .links {
+    display: flex;
+    gap: var(--space-5);
+    flex: 1;
+    flex-wrap: wrap;
+  }
+
+  .links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .links a:hover,
+  .links a[aria-current="page"] {
+    color: var(--text);
+  }
+</style>

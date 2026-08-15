@@ -1,0 +1,61 @@
+---
+import "../styles/prose.css";
+import BaseLayout from "./BaseLayout.astro";
+import Tag from "../components/Tag.astro";
+import type { Post } from "../lib/posts";
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const dateLabel = post.data.date.toLocaleDateString("zh-CN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <article class="wrapper post">
+    <header class="post-header">
+      <h1>{post.data.title}</h1>
+      <p class="meta">
+        <time datetime={post.data.date.toISOString()}>{dateLabel}</time>
+        {post.data.tags.length > 0 && (
+          <span class="tags">
+            {post.data.tags.map((tag) => <Tag tag={tag} />)}
+          </span>
+        )}
+      </p>
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .post-header {
+    margin-bottom: var(--space-7);
+  }
+
+  .post-header h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-3);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .tags {
+    display: flex;
+    gap: var(--space-2);
+  }
+</style>

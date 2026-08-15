@@ -1,0 +1,104 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PostCard from "../components/PostCard.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import { getAllPosts } from "../lib/posts";
+import { projects } from "../data/projects";
+import { site } from "../data/site";
+
+const posts = (await getAllPosts()).slice(0, 3);
+const featuredProjects = projects.slice(0, 3);
+---
+
+<BaseLayout>
+  <section class="wrapper-wide hero">
+    <p class="eyebrow">{site.author}</p>
+    <h1>{site.title}</h1>
+    <p class="tagline">{site.tagline}</p>
+    <p class="intro">{site.description}</p>
+    <SocialLinks />
+  </section>
+
+  <section class="wrapper-wide section">
+    <div class="section-header">
+      <h2>最近文章</h2>
+      <a class="link" href="/blog/">查看全部 →</a>
+    </div>
+    {posts.length > 0 ? (
+      <div>
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+    ) : (
+      <p class="empty">还没有发布文章。</p>
+    )}
+  </section>
+
+  <section class="wrapper-wide section">
+    <div class="section-header">
+      <h2>项目</h2>
+      <a class="link" href="/projects/">查看全部 →</a>
+    </div>
+    <div class="project-grid">
+      {featuredProjects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-block: var(--space-8) var(--space-9);
+  }
+
+  .eyebrow {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    margin: 0 0 var(--space-2);
+  }
+
+  .hero h1 {
+    font-size: var(--text-4xl);
+    margin: 0 0 var(--space-3);
+  }
+
+  .tagline {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: var(--text-lg);
+    margin: 0 0 var(--space-4);
+  }
+
+  .intro {
+    max-width: 38rem;
+    color: var(--text-muted);
+    margin: 0 0 var(--space-5);
+  }
+
+  .section {
+    padding-block: var(--space-7);
+    border-top: 1px solid var(--border);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+  }
+
+  .section-header h2 {
+    font-size: var(--text-xl);
+    margin: 0;
+  }
+
+  .empty {
+    color: var(--text-muted);
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-4);
+  }
+</style>

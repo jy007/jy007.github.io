@@ -1,0 +1,45 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import Tag from "../../components/Tag.astro";
+import { getAllPosts, getAllTags } from "../../lib/posts";
+
+const posts = await getAllPosts();
+const tags = getAllTags(posts);
+---
+
+<BaseLayout title="博客">
+  <div class="wrapper">
+    <h1>博客</h1>
+    {tags.length > 0 && (
+      <div class="tag-list">
+        {tags.map((tag) => <Tag tag={tag} />)}
+      </div>
+    )}
+    {posts.length > 0 ? (
+      <div>
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+    ) : (
+      <p class="empty">还没有发布文章。</p>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-5);
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .empty {
+    color: var(--text-muted);
+  }
+</style>

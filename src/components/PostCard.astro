@@ -1,0 +1,71 @@
+---
+import type { Post } from "../lib/posts";
+import { postUrl } from "../lib/posts";
+import Tag from "./Tag.astro";
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const dateLabel = post.data.date.toLocaleDateString("zh-CN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<article class="post-card">
+  <a class="title-link" href={postUrl(post)}>
+    <h3>{post.data.title}</h3>
+  </a>
+  <p class="meta">
+    <time datetime={post.data.date.toISOString()}>{dateLabel}</time>
+    {post.data.tags.length > 0 && (
+      <span class="tags">
+        {post.data.tags.map((tag) => <Tag tag={tag} />)}
+      </span>
+    )}
+  </p>
+  {post.data.description && <p class="description">{post.data.description}</p>}
+</article>
+
+<style>
+  .post-card {
+    padding-block: var(--space-5);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .title-link {
+    text-decoration: none;
+  }
+
+  .title-link h3 {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-lg);
+  }
+
+  .title-link:hover h3 {
+    color: var(--accent);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    margin: 0 0 var(--space-2);
+  }
+
+  .tags {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .description {
+    color: var(--text-muted);
+    margin: 0;
+  }
+</style>

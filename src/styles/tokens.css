@@ -1,0 +1,71 @@
+:root {
+  --bg: #faf9f7;
+  --bg-raised: #ffffff;
+  --text: #1c1b1a;
+  --text-muted: #6b6862;
+  --accent: #c76b3f;
+  --accent-text: #ffffff;
+  --border: #e5e2dc;
+  --code-bg: #f1efe9;
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: Georgia, "Songti SC", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: 2.25rem;
+  --text-4xl: 3rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  --radius: 8px;
+  --max-width: 42rem;
+  --max-width-wide: 60rem;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14151a;
+    --bg-raised: #1b1c22;
+    --text: #e8e6e1;
+    --text-muted: #93908a;
+    --accent: #e0975a;
+    --accent-text: #14151a;
+    --border: #2a2c33;
+    --code-bg: #1e1f26;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #14151a;
+  --bg-raised: #1b1c22;
+  --text: #e8e6e1;
+  --text-muted: #93908a;
+  --accent: #e0975a;
+  --accent-text: #14151a;
+  --border: #2a2c33;
+  --code-bg: #1e1f26;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}

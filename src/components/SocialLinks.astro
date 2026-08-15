@@ -1,0 +1,24 @@
+---
+import { site } from "../data/site";
+---
+
+<ul class="social-links">
+  {site.social.map((item) => (
+    <li>
+      <a class="link" href={item.href} target="_blank" rel="noopener noreferrer">
+        {item.label}
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .social-links {
+    display: flex;
+    gap: var(--space-5);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: var(--text-sm);
+  }
+</style>

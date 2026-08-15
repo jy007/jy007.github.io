@@ -1,0 +1,33 @@
+---
+import "../styles/prose.css";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import { site } from "../data/site";
+---
+
+<BaseLayout title="关于">
+  <article class="wrapper about">
+    <h1>关于{site.title}</h1>
+    <div class="prose">
+      <p>
+        <!-- TODO: 替换为真实简介。这里先占位，融合你的 NLP/ML 研究背景与目前的开发者身份。 -->
+        {site.description}。曾经做过事件抽取、命名实体识别等 NLP/ML 相关的研究和实践，现在更多是一名综合方向的开发者。
+      </p>
+      <p>
+        这里是占位文字，稍后替换为你想呈现的完整经历、擅长的方向、正在做的事情。
+      </p>
+    </div>
+    <SocialLinks />
+  </article>
+</BaseLayout>
+
+<style>
+  .about {
+    padding-block: var(--space-7);
+  }
+
+  .about h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-6);
+  }
+</style>
