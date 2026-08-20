@@ -1,7 +1,0 @@
-{
-  "title": "一篇用 HTML 写的示例文章",
-  "date": "2026-08-14",
-  "tags": ["随笔", "HTML"],
-  "description": "这是一篇示例 HTML 文章，用来验证与 Markdown 文章共用同一套排版和列表逻辑。",
-  "draft": false
-}
