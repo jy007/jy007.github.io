@@ -1,7 +1,7 @@
 {
   "title": "一个字节的符号，如何让 TiFlash 的中文 LIKE 静默归零",
   "date": "2026-08-20",
-  "tags": ["TiDB", "TiFlash", "数据库", "排查记录"],
+  "tags": ["TiDB", "TiFlash", "数据库", "排查记录", "ai generated"],
   "description": "同一条中文 LIKE 查询，走 TiFlash 返回 0，走 TiKV 返回正确结果。从症状、交叉验证到源码级根因的完整排查，最终定位到 C++ 里 char 符号性的平台差异。",
   "draft": false
 }

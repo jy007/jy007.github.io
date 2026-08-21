@@ -1,0 +1,7 @@
+{
+  "title": "Pipecat 语音管线架构说明",
+  "date": "2026-08-21",
+  "tags": ["Pipecat", "语音代理", "架构笔记", "ai generated"],
+  "description": "梳理 Pipecat 单机器人语音场景的分层结构、端到端时序、各模块输入输出,以及流式处理(VAD、STT→LLM、LLM→TTS)的关键参数与打断机制。",
+  "draft": false
+}

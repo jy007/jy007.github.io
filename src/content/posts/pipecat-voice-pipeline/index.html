@@ -1,0 +1,163 @@
+<p>整理 Pipecat 单机器人语音场景(如 <code>examples/getting-started/06-voice-agent.py</code>)的分层结构、端到端时序、每个模块的输入输出,以及流式处理各环节的具体参数。</p>
+
+<h2>分层结构</h2>
+<p>从进程生命周期到单轮对话回路,三层容器逐级收窄。</p>
+
+<pre><code>WorkerRunner  管理进程生命周期(SIGINT/SIGTERM)、注册/驱动 Worker
+  └─ PipelineWorker(单机器人的常见形态)
+       Transport.input()  用户麦克风/通话接入
+         → STT                       语音 → 文本
+         → UserContextAggregator     拼装用户消息到对话历史
+         → LLM                       推理生成回复,可能触发 Tool
+         → TTS                       文本 → 语音
+         → Transport.output()        下发音频给用户
+         → AssistantContextAggregator  把机器人说的话写回对话历史
+              ↳ 更新对话历史,供下一轮 UserContextAggregator 使用
+</code></pre>
+
+<ul>
+  <li><strong>Frame</strong>(<code>src/pipecat/frames/frames.py</code>)是流转的最小单位:音频/文本/控制信号,沿管线<strong>下行</strong>(DOWNSTREAM,用户→机器人回复方向)或<strong>上行</strong>(UPSTREAM,错误/打断/就绪信号回传)。</li>
+  <li><strong>FrameProcessor</strong>(<code>src/pipecat/processors/frame_processor.py</code>)是所有节点(Transport、STT、聚合器、LLM、TTS)的基类,每个节点收到帧、处理、往下(或上)推。</li>
+  <li><strong>Pipeline</strong>(<code>src/pipecat/pipeline/pipeline.py</code>)只是把一串 FrameProcessor 首尾相连。</li>
+  <li><strong>PipelineWorker</strong>(<code>src/pipecat/pipeline/worker.py</code>)是"运行时容器",负责启动/结束/心跳/错误处理,是真正跑在 <code>WorkerRunner</code> 里的单元(<code>PipelineTask</code> 是它的旧名字,已弃用)。</li>
+</ul>
+
+<h2>端到端语音流程</h2>
+<p>以用户说"今天北京天气怎么样"、机器人调用天气工具后回答"今天北京晴天,气温25度"为例。</p>
+
+<ol>
+  <li><strong>用户开口</strong> — Transport(Daily/WebRTC/WebSocket/本地麦克风)采集音频帧,VAD 检测语音起止。</li>
+  <li><strong>STT</strong> 把音频帧转成文本帧。</li>
+  <li><strong>UserContextAggregator</strong> 把用户文本追加进共享的对话历史(<code>LLMContext</code>)。</li>
+  <li><strong>LLM</strong> 读取对话历史,流式生成回复文本,期间可能调用 <code>@tool</code> 触发 Function Calling。</li>
+  <li><strong>TTS</strong> 把 LLM 输出的文本流式合成为音频。</li>
+  <li><strong>Transport.output()</strong> 把音频下发给用户播放。</li>
+  <li><strong>AssistantContextAggregator</strong> 把机器人已说出的内容写回对话历史,供下一轮使用。</li>
+  <li>用户打断机器人说话时,任意节点可 <code>broadcast_interruption()</code> 广播打断信号(上行+下行),清空未播放的 LLM/TTS 输出,重新进入用户轮次。</li>
+</ol>
+
+<h2>各模块的输入 / 输出</h2>
+<p>沿用上面的例子,串一遍每个模块实际收到什么数据、往下游/给用户返回什么数据。</p>
+
+<table>
+  <thead>
+    <tr><th>模块</th><th>输入</th><th>输出</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Transport.input()<br><span>接入麦克风/通话线路</span></td>
+      <td>用户对着麦克风/电话说话产生的原始 PCM 音频字节流(例如 16kHz、16-bit,每 20ms 一帧),外加连接控制信号(开始/结束通话)。</td>
+      <td>重采样、降噪后,连续往下游发送同样格式的音频数据块,相当于把"用户正在说的话"实时喂给语音识别模块。</td>
+    </tr>
+    <tr>
+      <td>STT<br><span>语音识别</span></td>
+      <td>上一步的原始音频字节流(用户说"今天北京天气怎么样"对应的那段 PCM 数据)。</td>
+      <td>先吐出不断修正的中间结果(如"今天"→"今天北京"→"今天北京天气"),用户说完后给出最终文本"今天北京天气怎么样"。</td>
+    </tr>
+    <tr>
+      <td>UserContextAggregator<br><span>拼装用户输入</span></td>
+      <td>STT 给出的文本"今天北京天气怎么样"。</td>
+      <td>把这句话追加进完整的对话历史列表,再整体传给 LLM。</td>
+    </tr>
+    <tr>
+      <td>LLM<br><span>推理生成回复</span></td>
+      <td>完整对话历史列表(系统提示 + 历史对话 + 用户这句新提问)。</td>
+      <td>一边推理一边流式吐出文字片段;判断需要查天气时,先输出结构化工具调用请求,拿到结果后再生成最终回复文本。</td>
+    </tr>
+    <tr>
+      <td>TTS<br><span>语音合成</span></td>
+      <td>LLM 吐出的文本片段,如"今天北京晴天,气温25度"。</td>
+      <td>把文字合成为一段音频字节流(例如 24kHz PCM),连续播放即是机器人用语音说出这句话。</td>
+    </tr>
+    <tr>
+      <td>Transport.output()<br><span>下发给用户</span></td>
+      <td>TTS 生成的这段语音音频字节流。</td>
+      <td>通过 WebRTC/电话线路/扬声器真正播放出声音,用户听到机器人说"今天北京晴天,气温25度"。</td>
+    </tr>
+    <tr>
+      <td>AssistantContextAggregator<br><span>记录机器人说过的话</span></td>
+      <td>机器人这一轮实际说出的完整文本"今天北京晴天,气温25度"。</td>
+      <td>把这句话作为一条 assistant 消息追加进对话历史,供下一轮用户提问使用。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>用户这句话被拼进对话历史后传给 LLM:</p>
+<pre><code>[
+  {"role": "system", "content": "你是一个语音助手,回答要简短口语化"},
+  {"role": "user", "content": "今天北京天气怎么样"}
+]</code></pre>
+
+<p>LLM 判断需要查天气,先发出工具调用请求,拿到结果后生成回复:</p>
+<pre><code>{"name": "get_weather", "arguments": {"city": "北京"}}
+→ {"temperature": 25, "condition": "晴"}
+→ "今天北京晴天,气温25度"</code></pre>
+
+<p>机器人说完这句话后,写回对话历史,供下一轮使用:</p>
+<pre><code>[
+  {"role": "system", "content": "你是一个语音助手,回答要简短口语化"},
+  {"role": "user", "content": "今天北京天气怎么样"},
+  {"role": "assistant", "content": "今天北京晴天,气温25度"}
+]</code></pre>
+
+<h2>流式处理细节</h2>
+<p>整个链路是流式的,但不同环节的"流"粒度不一样:音频采集/播放是固定时间切片,STT→LLM 是"整句攒完再发",LLM→TTS 才是真正按语义(句子)流式传递。</p>
+
+<h3>音频采样 / 分片间隔</h3>
+<table>
+  <thead><tr><th>参数</th><th>数值</th></tr></thead>
+  <tbody>
+    <tr><td>本地麦克风采集分片(<code>transports/local/audio.py</code>)</td><td>20 ms</td></tr>
+    <tr><td>音频播放下发打包(4 × 10ms 块)</td><td>40 ms</td></tr>
+    <tr><td>STT / VAD 常用采样率</td><td>16 kHz</td></tr>
+    <tr><td>TTS 输出常用采样率</td><td>24 kHz</td></tr>
+  </tbody>
+</table>
+<p>16kHz 下,20ms 对应 320 采样点 / 640 字节。</p>
+
+<h3>VAD 识别机制</h3>
+<p>VAD 不是简单的能量检测,而是<strong>神经网络模型</strong>判定(Silero VAD,ONNX 模型,<code>src/pipecat/audio/vad/silero.py</code>):每次喂给模型 512 个采样点(16kHz 下约 32ms)做一次推理,同时计算指数平滑(系数 0.2)后的音量值,关键阈值如下:</p>
+<ul>
+  <li>置信度 ≥ 0.7(<code>VAD_CONFIDENCE</code>)</li>
+  <li>音量 ≥ 0.6(<code>VAD_MIN_VOLUME</code>)</li>
+  <li><code>start_secs</code> 0.2s</li>
+  <li><code>stop_secs</code> 0.2s</li>
+</ul>
+<p>状态机大致是:</p>
+<ul>
+  <li><strong>QUIET → STARTING</strong>:单帧(约 32ms)检测到语音;若语音随即消失且未满 0.2s,退回 QUIET。</li>
+  <li><strong>STARTING → SPEAKING</strong>:连续 0.2s(<code>start_secs</code>)保持语音判定,触发 <code>UserStartedSpeaking</code>。</li>
+  <li><strong>SPEAKING → STOPPING → QUIET</strong>:检测到静音后先进入 STOPPING;若静音未满 0.2s 又出现语音,退回 SPEAKING;连续静音满 0.2s(<code>stop_secs</code>)才触发 <code>UserStoppedSpeaking</code>。</li>
+</ul>
+<p>这个"连续一段时间"的去抖动设计是为了防止呼吸声/短促噪音误判成语音起止。</p>
+
+<h3>STT → LLM:整句提交,不是分片流式</h3>
+<p>STT 识别过程中的中间结果(interim transcript)会被 <code>LLMUserAggregator</code> 直接丢弃,不进对话历史。只有 STT 给出的<strong>最终确定文本</strong>才会被累积到缓冲区。</p>
+<blockquote>缓冲区何时提交给 LLM,由用户轮次结束策略决定:默认是基于语义的轮次检测(<code>LocalSmartTurnAnalyzerV3</code>),也可以配置成"静音超时"策略(默认 0.6 秒没有新语音就认为说完了),另外还有一个 5 秒的兜底超时(<code>user_turn_stop_timeout</code>)。</blockquote>
+<p>结论:<strong>用户说的一整句话,等 VAD + 轮次检测判断"说完了"之后,合并成一条完整消息,一次性发给 LLM</strong>——LLM 看到的是完整的一句用户输入,不是碎片。</p>
+
+<h3>LLM → TTS:按句子流式分片</h3>
+<p>LLM 是逐 token 流式吐字的,这些文字先进入 TTS 内部的"分句缓冲区"(<code>TTSService</code> 的 <code>SENTENCE</code> 聚合模式,默认开启)。缓冲区不看时间,只看<strong>标点符号</strong>(句号、问号、感叹号、分号,以及中文全角标点"。""?""!""；"等)作为切分点——遇到一个完整句子就立刻推给 TTS 合成,不等整段回复说完。</p>
+<blockquote>每个句子大约多等 <strong>200–300ms</strong> 用于攒够一句话,这是"按句切"策略带来的额外延迟。也可以切换成 <code>TOKEN</code> 模式,LLM 吐一个词就立刻扔给 TTS,延迟更低但合成语音的自然度会打折扣(容易断句奇怪)。</blockquote>
+
+<h2>打断(Interruption)机制</h2>
+<p>任意节点可调用 <code>broadcast_interruption()</code> 广播打断信号,同时向上游和下游传播。</p>
+<ul>
+  <li><strong>下游(TTS / Transport.output)</strong>:收到后立刻停止播放/丢弃排队中的音频。</li>
+  <li><strong>上游(LLM / STT)</strong>:收到后取消正在进行的推理/识别。</li>
+</ul>
+<p><code>EndFrame</code> / <code>StopFrame</code> 等属于<strong>不可中断帧</strong>(Uninterruptible),即使发生打断也不会从内部队列中被清除。</p>
+
+<h2>扩展形态:多 Worker 协作</h2>
+<p>当需要多个 Worker 协作(如多 Agent 交接、并行辩论)时,还有一层 Bus + Registry + Job 机制。</p>
+<table>
+  <thead><tr><th>组件</th><th>位置</th><th>作用</th></tr></thead>
+  <tbody>
+    <tr><td><code>WorkerBus</code></td><td><code>src/pipecat/bus/</code></td><td>跨 Worker 消息总线,进程内默认用 <code>AsyncQueueBus</code>,分布式场景用 <code>PgmqBus</code> / <code>RedisBus</code>。</td></tr>
+    <tr><td><code>WorkerRegistry</code></td><td><code>src/pipecat/registry/</code></td><td>Worker 服务发现,<code>watch(name, handler)</code> 监听某个 Worker 就绪。</td></tr>
+    <tr><td><code>@job</code> / <code>job_group</code></td><td><code>src/pipecat/pipeline/job_context.py</code></td><td>跨 Worker 的请求/响应式 RPC。</td></tr>
+  </tbody>
+</table>
+<p>这一层是可选的,单机器人语音场景不需要关心,详见 <code>examples/multi-worker/</code>。</p>
+
+<p><em>整理自 Pipecat 项目文档 <code>docs/architecture/voice-pipeline.md</code>。</em></p>
